@@ -1,24 +1,38 @@
-// Part 2. Initialize & configure the client library
 document.addEventListener("DOMContentLoaded", function() {
-var tellerConnect = TellerConnect.setup({
-  applicationId: import.meta.env.VITE_TELLER_APP_ID,
-  // Teller's products that you would like to use, e.g. "verify"
-  products: ["verify",],
-  onInit: function() {
-    console.log("Teller Connect has initialized");
-  },
-  // Part 3. Handle a successful enrollment's accessToken
-  onSuccess: function(enrollment) {
-    console.log("User enrolled successfully", enrollment.accessToken);
-  },
-  onExit: function() {
-    console.log("User closed Teller Connect");
-  }
+    var tellerConnect = TellerConnect.setup({
+      applicationId: import.meta.env.VITE_TELLER_APP_ID,
+      products: ["verify"],
+      onInit: function() {
+        console.log("Teller Connect has initialized");
+      },
+      onSuccess: function(enrollment) {
+        console.log("User enrolled successfully", enrollment.accessToken);
+      },
+      onExit: function() {
+        console.log("User closed Teller Connect");
+      }
+    });
+
+    var el = document.getElementById("teller-connect");
+    el.addEventListener("click", function() {
+      tellerConnect.open();
+    });
+
+    const token = enrollment.accessToken;
+    const apiURL = import.meta.env.API_URL;
+    $.ajax({
+        url: apiURL,
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${token}`
+        },
+        success: function() {
+            console.log('some token was sent to `${apiURL}`')
+        },
+        error: function(error){
+            console.error('Error', error)
+        }
+        
+    });
 });
 
-// Part 4. Hook user actions to start Teller Connect
-var el = document.getElementById("teller-connect");
-el.addEventListener("click", function() {
-  tellerConnect.open();
-});
-});
